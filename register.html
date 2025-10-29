@@ -20,7 +20,7 @@
     <main>
         <section class="login-card">
             <h3 class="login-tittle">Pendaftaran Akun</h3>
-            <p class="login-tagline">Yuk, lanjutin belajarmu di videobelajar</p>
+            <p class="login-tagline">Your work, ready to take off</p>
             <form>
                 <div class="login-name">
                 <p>Nama Lengkap <span class="required">*</span></p>
@@ -30,7 +30,7 @@
                 <p>E-mail <span class="required">*</span></p>
                 <input type="email" required class="email">
                 </div>
-                <div class="login-hp">
+                <!-- <div class="login-hp">
                     <p>No. Hp <span class="required">*</span></p>
                     <div class="phone-input">
                     <img src="images/indonesia-flag.png" alt="ID" class="flag">
@@ -42,17 +42,17 @@
                     </select>
                     <input type="text" class="phone-number" inputmode="numeric" pattern="[0-9]*" required>
                     </div>
-                </div>
+                </div> -->
                 
                 <div class="login-password">
                     <p name="password">Kata Sandi <span class="required">*</span></p>
-                    <input type="password" name="password" required class="password">
-                    <img src="images/hide.png" class="eye">
+                    <input type="password" name="password" required class="password" id="password">
+                    <img src="images/hide.png" class="eye" id="eyeicon">
                 </div>
                 <div class="login-password">
                     <p name="password">Konfirmasi Kata Sandi <span class="required">*</span></p>
                     <input type="password" name="password" required class="password">
-                    <img src="images/hide.png" class="eye">
+                    <img src="images/hide.png" class="eye" id="eyeicon">
                 </div>
                 <div class="forget">
                     <a href="#">lupa password?</a>
@@ -60,7 +60,7 @@
                 <button class="login" type="submit" onclick="location.href='home.html'">Daftar</button>
             </form>
                 <button class="register" type="submit" onclick="location.href='login.html'">Masuk</button>
-                <div class="atau">
+                <!-- <div class="atau">
                     <hr>
                     <span>atau</span>
                     <hr>
@@ -70,8 +70,21 @@
                         <img src="images/google.png">
                         <p>Masuk dengan Google</p>
                     </div>
-                </button>
+                </button> -->
         </section>
     </main>
+    <script>
+        let eyeicon = document.getElementById(`eyeicon`);
+        let password = document.getElementById(`password`);
+        eyeicon.onclick = function(){
+            if(password.type == `password`){
+                password.type = `text`;
+                eyeicon.src= `images/unhide.png`;
+            } else{
+                password.type = 'password';
+                eyeicon.src= `images/hide.png`;
+            }
+        }
+    </script>
 </body>
 </html>

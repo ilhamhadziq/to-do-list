@@ -91,12 +91,12 @@ form{
   cursor: pointer;
 }
 .login{
-  background-color: #3ECF4C;
-  color: white;
+  background-color: #71C9CE;
+  color: #E3FDFD;
 }
 .register{
-  background-color: #E2FCD9CC;
-  color: #3ECF4C;
+  background-color: #E3FDFD;
+  color: #71C9CE;
 }
 .forget{
   display: flex;

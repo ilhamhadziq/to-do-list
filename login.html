@@ -20,7 +20,7 @@
     <main>
         <section class="login-card">
             <h3 class="login-tittle">Masuk ke Akun</h3>
-            <p class="login-tagline">Yuk, lanjutin belajarmu di videobelajar</p>
+            <p class="login-tagline">Your work, ready to take off</p>
             <form>
                 <div class="login-email">
                 <p>E-mail <span class="required">*</span></p>
@@ -28,8 +28,8 @@
                 </div>
                 <div class="login-password">
                     <p name="password">Kata Sandi <span class="required">*</span></p>
-                    <input type="password" name="password" required class="password">
-                    <img src="images/hide.png" class="eye">
+                    <input type="password" name="password" required class="password" id="password">
+                    <img src="images/hide.png" class="eye" id="eyeicon">
                 </div>
                 <div class="forget">
                     <a href="#">lupa password?</a>
@@ -37,7 +37,7 @@
                 <button class="login" type="submit" onclick="location.href='home.html'">Masuk</button>
             </form>
                 <button class="register" type="submit" onclick="location.href='register.html'">Daftar</button>
-                <div class="atau">
+                <!-- <div class="atau">
                     <hr>
                     <span>atau</span>
                     <hr>
@@ -47,9 +47,22 @@
                         <img src="images/google.png">
                         <p>Masuk dengan Google</p>
                     </div>
-                </button>
+                </button> -->
             
         </section>
     </main>
+    <script>
+        let eyeicon = document.getElementById(`eyeicon`);
+        let password = document.getElementById(`password`);
+        eyeicon.onclick = function(){
+            if(password.type == `password`){
+                password.type = `text`;
+                eyeicon.src= `images/unhide.png`;
+            } else{
+                password.type = 'password';
+                eyeicon.src= `images/hide.png`;
+            }
+        }
+    </script>
 </body>
 </html>
