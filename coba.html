@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>WorkPlane — To-Do</title>
+
+  <!-- Font (opsional) -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --c1: #E3FDFD;
+      --c2: #CBF1F5;
+      --c3: #A6E3E9;
+      --c4: #71C9CE;
+      --text: #2C3E50;
+      --muted: #6b7a86;
+      --bg: #f7feff;
+      --radius: 10px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      margin:0;
+      background: linear-gradient(180deg,var(--c1), #f0fbfb);
+      color:var(--text);
+      padding:24px;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* Navbar */
+    .nav {
+      display:flex;
+      align-items:center;
+      gap:12px;
+      background: #ffffff;
+      padding:12px 16px;
+      border-radius:12px;
+      box-shadow: 0 6px 18px rgba(17,24,39,0.04);
+      max-width:1100px;
+      margin:0 auto 20px;
+    }
+    .logo {
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .plane {
+      width:36px;
+      height:36px;
+      background:var(--c4);
+      border-radius:8px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      color:white;
+      font-weight:700;
+      font-size:18px;
+      transform: rotate(-15deg);
+      box-shadow: 0 4px 10px rgba(113,201,206,0.18);
+    }
+    .brand {
+      font-weight:700;
+      font-size:20px;
+      color:var(--text);
+    }
+
+    /* Layout */
+    .container{
+      max-width:1100px;
+      margin:18px auto 40px;
+      display:grid;
+      grid-template-columns: 1fr 380px;
+      gap:20px;
+    }
+
+    /* Card */
+    .card {
+      background: white;
+      padding:18px;
+      border-radius:var(--radius);
+      box-shadow: 0 8px 24px rgba(2,6,23,0.06);
+    }
+
+    /* Input area */
+    .add-row{
+      display:flex;
+      gap:10px;
+    }
+    .add-row input{
+      flex:1;
+      padding:10px 12px;
+      border-radius:8px;
+      border:1px solid #e6f3f3;
+      background: linear-gradient(180deg,var(--c1), var(--c2));
+      outline:none;
+      font-size:14px;
+      color:var(--text);
+    }
+    .btn {
+      background:var(--c4);
+      border:none;
+      color:#fff;
+      padding:10px 14px;
+      border-radius:8px;
+      cursor:pointer;
+      font-weight:600;
+    }
+    .btn.ghost {
+      background:transparent;
+      border:1px solid var(--c4);
+      color:var(--text);
+    }
+
+    /* Todo list */
+    ul.todo-list {
+      margin:14px 0 0;
+      padding:0;
+      list-style:none;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    li.todo-item{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:10px 12px;
+      border-radius:8px;
+      border:1px solid #f0f7f7;
+      transition:background .15s, transform .06s;
+      cursor:pointer;
+      user-select:none;
+      background:linear-gradient(180deg, #fff, #fcffff);
+    }
+    li.todo-item:hover { transform: translateY(-2px); }
+
+    .todo-text {
+      flex:1;
+      font-size:15px;
+    }
+
+    /* DONE state */
+    .done .todo-text {
+      text-decoration: line-through;
+      color: var(--muted);
+      opacity:0.8;
+    }
+    .checkbox {
+      width:18px;
+      height:18px;
+      border-radius:4px;
+      border:2px solid #e3f7f7;
+      display:inline-grid;
+      place-items:center;
+    }
+    .checkbox.checked {
+      background:var(--c4);
+      border-color:var(--c4);
+      color:white;
+    }
+
+    .meta {
+      font-size:13px;
+      color:var(--muted);
+      margin-top:8px;
+    }
+
+    /* Right column */
+    .right-col h4 { margin:0 0 12px; }
+    .empty {
+      color:var(--muted);
+      text-align:center;
+      padding:18px;
+      border-radius:8px;
+      border:1px dashed #e9f6f6;
+    }
+
+    /* Responsive */
+    @media (max-width:980px){
+      .container{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="nav">
+    <div class="logo">
+      <div class="plane">✈</div>
+      <div>
+        <div class="brand">WorkPlane</div>
+        <div style="font-size:12px;color:var(--muted)">Plan smarter. Work together.</div>
+      </div>
+    </div>
+    <div style="margin-left:auto; font-size:13px; color:var(--muted)">Tagline: Your work, ready to take off ✈️</div>
+  </header>
+
+  <main class="container">
+    <!-- LEFT: main todo -->
+    <section class="card">
+      <h3>My To-Do</h3>
+      <div class="meta">Klik item untuk menandai <strong>done</strong>. Data tersimpan di browser.</div>
+
+      <div style="margin-top:12px" class="add-row">
+        <input id="newTodo" placeholder="Tambahkan tugas baru — mis: Kirim laporan bulanan" />
+        <button id="addBtn" class="btn">Tambah</button>
+      </div>
+
+      <ul id="todoList" class="todo-list" aria-live="polite"></ul>
+
+      <div style="margin-top:12px; display:flex; gap:8px;">
+        <button id="showAllBtn" class="btn ghost">Tampilkan Semua</button>
+        <button id="showDoneBtn" class="btn">Tampilkan Done</button>
+        <button id="clearDoneBtn" class="btn ghost" style="margin-left:auto">Hapus Semua Done</button>
+      </div>
+    </section>
+
+    <!-- RIGHT: done list / details -->
+    <aside class="card right-col">
+      <h4>Sudah Selesai (Done)</h4>
+      <div id="doneContainer"></div>
+    </aside>
+  </main>
+
+  <script>
+    /**
+     * Simple To-Do app:
+     * - toggle done by clicking an item
+     * - show done items in the right column
+     * - persist using localStorage
+     */
+
+    const STORAGE_KEY = "workplane_todos_v1";
+
+    // DOM
+    const todoListEl = document.getElementById("todoList");
+    const doneContainer = document.getElementById("doneContainer");
+    const newTodoInput = document.getElementById("newTodo");
+    const addBtn = document.getElementById("addBtn");
+    const showAllBtn = document.getElementById("showAllBtn");
+    const showDoneBtn = document.getElementById("showDoneBtn");
+    const clearDoneBtn = document.getElementById("clearDoneBtn");
+
+    // state: array of { id, text, done, createdAt }
+    let todos = loadTodos();
+
+    // initial render
+    renderLists();
+
+    // add handlers
+    addBtn.addEventListener("click", () => {
+      const t = newTodoInput.value.trim();
+      if(!t) return;
+      addTodo(t);
+      newTodoInput.value = "";
+      newTodoInput.focus();
+    });
+
+    newTodoInput.addEventListener("keydown", (e)=>{
+      if(e.key === "Enter") addBtn.click();
+    });
+
+    showAllBtn.addEventListener("click", () => {
+      // focus main list: show all
+      renderLists();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    showDoneBtn.addEventListener("click", () => {
+      // only show done items in the main list
+      renderLists({ filter: "done" });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    clearDoneBtn.addEventListener("click", () => {
+      if(!confirm("Yakin ingin menghapus semua item yang sudah Done?")) return;
+      todos = todos.filter(t => !t.done);
+      saveTodos();
+      renderLists();
+    });
+
+    // functions
+    function addTodo(text){
+      const item = {
+        id: "id" + Date.now(),
+        text,
+        done: false,
+        createdAt: Date.now()
+      };
+      todos.unshift(item);
+      saveTodos();
+      renderLists();
+    }
+
+    function toggleDone(id){
+      todos = todos.map(t => t.id === id ? {...t, done: !t.done} : t);
+      saveTodos();
+      renderLists();
+    }
+
+    function saveTodos(){
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+      } catch(e) {
+        console.error("Gagal menyimpan ke localStorage:", e);
+      }
+    }
+
+    function loadTodos(){
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return sampleTodos();
+        return JSON.parse(raw);
+      } catch(e){
+        console.error("Error parsing todos, reset:", e);
+        return sampleTodos();
+      }
+    }
+
+    function sampleTodos(){
+      return [
+        {id:"id1", text:"Kirim laporan mingguan ke manajer", done:false, createdAt:Date.now()-3600_000},
+        {id:"id2", text:"Rapat tim jam 10:00", done:true, createdAt:Date.now()-7200_000},
+        {id:"id3", text:"Review pull request", done:false, createdAt:Date.now()-18_000_000},
+      ];
+    }
+
+    function renderLists(opts = {}) {
+      const filter = opts.filter || "all"; // all | done
+      // MAIN list
+      const visible = todos.filter(t => filter === "all" ? true : t.done);
+      todoListEl.innerHTML = visible.length ? visible.map(renderTodoItem).join("") : `<div class="empty">Belum ada tugas. Tambah tugas baru di atas.</div>`;
+
+      // attach item click handlers (delegation)
+      // use event delegation for performance
+      todoListEl.querySelectorAll(".todo-item").forEach(el=>{
+        const id = el.dataset.id;
+        el.addEventListener("click", ()=> toggleDone(id));
+      });
+
+      // RIGHT: done list
+      const done = todos.filter(t => t.done);
+      if(done.length === 0){
+        doneContainer.innerHTML = `<div class="empty">Belum ada tugas selesai.</div>`;
+      } else {
+        doneContainer.innerHTML = `<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;">${
+          done.map(d => `<li style="padding:10px;border-radius:8px;background:linear-gradient(180deg,var(--c2), #fff); border:1px solid #e9f8f8;">
+            <div style="font-weight:600;color:var(--muted);font-size:14px">${escapeHtml(d.text)}</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:6px">Selesai: ${timeAgo(d.createdAt)}</div>
+          </li>`).join("")
+        }</ul>`;
+      }
+    }
+
+    function renderTodoItem(t){
+      // each item shows checkbox left, text center, small timestamp right (optional)
+      return `
+        <li class="todo-item ${t.done ? 'done' : ''}" data-id="${t.id}" role="button" aria-pressed="${t.done}">
+          <div class="checkbox ${t.done ? 'checked' : ''}" aria-hidden="true">${t.done ? '✓' : ''}</div>
+          <div class="todo-text">${escapeHtml(t.text)}</div>
+          <div style="font-size:12px;color:var(--muted);min-width:80px;text-align:right">${timeAgo(t.createdAt)}</div>
+        </li>
+      `;
+    }
+
+    // small helpers
+    function timeAgo(ts){
+      const sec = Math.floor((Date.now() - ts)/1000);
+      if(sec < 60) return `${sec}s yang lalu`;
+      const m = Math.floor(sec/60);
+      if(m < 60) return `${m}m yang lalu`;
+      const h = Math.floor(m/60);
+      if(h < 24) return `${h}j yang lalu`;
+      const d = Math.floor(h/24);
+      return `${d} hari yang lalu`;
+    }
+
+    function escapeHtml(s){
+      return s.replace(/[&<>"']/g, c => {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+      });
+    }
+  </script>
+</body>
+</html>
