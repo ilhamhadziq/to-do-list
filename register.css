@@ -67,6 +67,9 @@ form{
 .login-password{
   position: relative;
 }
+.login-password input::placeholder{
+  color: red;
+}
 .eye{
   position: absolute;
   right: 0;

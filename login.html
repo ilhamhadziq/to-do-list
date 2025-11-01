@@ -21,10 +21,10 @@
         <section class="login-card">
             <h3 class="login-tittle">Masuk ke Akun</h3>
             <p class="login-tagline">Your work, ready to take off</p>
-            <form>
+            <form id="loginForm">
                 <div class="login-email">
                 <p>E-mail <span class="required">*</span></p>
-                <input type="email" required class="email">
+                <input type="email" required class="email" id="email">
                 </div>
                 <div class="login-password">
                     <p name="password">Kata Sandi <span class="required">*</span></p>
@@ -34,21 +34,9 @@
                 <div class="forget">
                     <a href="#">lupa password?</a>
                 </div>
-                <button class="login" type="submit" onclick="location.href='home.html'">Masuk</button>
+                <button class="login" type="submit">Masuk</button>
             </form>
                 <button class="register" type="submit" onclick="location.href='register.html'">Daftar</button>
-                <!-- <div class="atau">
-                    <hr>
-                    <span>atau</span>
-                    <hr>
-                </div>
-                <button class="google" type="submit">
-                    <div class="google-btn">
-                        <img src="images/google.png">
-                        <p>Masuk dengan Google</p>
-                    </div>
-                </button> -->
-            
         </section>
     </main>
     <script>
@@ -63,6 +51,21 @@
                 eyeicon.src= `images/hide.png`;
             }
         }
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const user = JSON.parse(localStorage.getItem('user'));
+
+        if (user && user.email === email && user.password === password) {
+            alert('Login berhasil!');
+            localStorage.setItem('loggedIn', 'true'); // tanda login
+            window.location.href = 'coba.html';
+        } else {
+            alert('Email atau password salah!');
+        }
+        });
     </script>
 </body>
 </html>

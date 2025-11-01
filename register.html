@@ -21,70 +21,34 @@
         <section class="login-card">
             <h3 class="login-tittle">Pendaftaran Akun</h3>
             <p class="login-tagline">Your work, ready to take off</p>
-            <form>
+            <form id="registerForm">
                 <div class="login-name">
                 <p>Nama Lengkap <span class="required">*</span></p>
-                <input type="text" required class="email">
+                <input type="text" required class="email" id="namaLengkap">
                 </div>
                 <div class="login-email">
                 <p>E-mail <span class="required">*</span></p>
-                <input type="email" required class="email">
-                </div>
-                <!-- <div class="login-hp">
-                    <p>No. Hp <span class="required">*</span></p>
-                    <div class="phone-input">
-                    <img src="images/indonesia-flag.png" alt="ID" class="flag">
-                    <select class="country-code">
-                        <option value="+62">+62</option>
-                        <option value="+1">+1</option>
-                        <option value="+91">+91</option>
-                        <option value="+81">+81</option>
-                    </select>
-                    <input type="text" class="phone-number" inputmode="numeric" pattern="[0-9]*" required>
-                    </div>
-                </div> -->
-                
+                <input type="email" required class="email" id="email">
+                </div>                
                 <div class="login-password">
                     <p name="password">Kata Sandi <span class="required">*</span></p>
-                    <input type="password" name="password" required class="password" id="password">
+                    <input type="password" name="password" required class="password" id="password" placeholder="">
                     <img src="images/hide.png" class="eye" data-target="password">
                 </div>
                 <div class="login-password">
                     <p name="password">Konfirmasi Kata Sandi <span class="required">*</span></p>
-                    <input type="password" name="password" required class="password" id="confirm-password">
-                    <img src="images/hide.png" class="eye" data-target="confirm-password">
+                    <input type="password" name="password" required class="password" id="confirmPassword" placeholder="">
+                    <img src="images/hide.png" class="eye" data-target="confirmPassword">
                 </div>
                 <div class="forget">
                     <a href="#">lupa password?</a>
                 </div>
-                <button class="login" type="submit" onclick="location.href='home.html'">Daftar</button>
+                <button class="login" type="submit">Daftar</button>
             </form>
                 <button class="register" type="submit" onclick="location.href='login.html'">Masuk</button>
-                <!-- <div class="atau">
-                    <hr>
-                    <span>atau</span>
-                    <hr>
-                </div>
-                <button class="google" type="submit">
-                    <div class="google-btn">
-                        <img src="images/google.png">
-                        <p>Masuk dengan Google</p>
-                    </div>
-                </button> -->
         </section>
     </main>
     <script>
-        // let eyeicon = document.getElementById(`eyeicon`);
-        // let password = document.getElementById(`password`);
-        // eyeicon.onclick = function(){
-        //     if(password.type == `password`){
-        //         password.type = `text`;
-        //         eyeicon.src= `images/unhide.png`;
-        //     } else{
-        //         password.type = 'password';
-        //         eyeicon.src= `images/hide.png`;
-        //     }
-        // }
         document.querySelectorAll('.eye').forEach(icon => {
         icon.addEventListener('click', () => {
             const targetId = icon.dataset.target;
@@ -100,6 +64,33 @@
             }
         });
         });
-    </script>
+
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+        e.preventDefault(); // mencegah form submit otomatis
+
+        // Ambil semua inputan
+        const namaLengkap = document.getElementById('namaLengkap').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        // Cek kecocokan password
+        if (password !== confirmPassword) {
+            // alert('Password dan konfirmasi tidak cocok!');
+            document.getElementById('password').value = '';
+            document.getElementById('confirmPassword').value = '';
+            document.getElementById('password').placeholder= 'Password Anda Salah!';
+            document.getElementById('password').focus();
+            return; // hentikan proses lanjut
+        }
+
+        // Simpan ke localStorage
+        const user = { namaLengkap, email, password };
+        localStorage.setItem('user', JSON.stringify(user)); // simpan sebagai string JSON
+
+        alert('Registrasi berhasil!');
+        window.location.href = 'login.html';
+        });
+        </script>
 </body>
 </html>
