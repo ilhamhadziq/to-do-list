@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>WorkPlane — To-Do</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+
+<body>
+  <header>
+    <img src="images/logo.png" class="logo">
+
+    <input type="checkbox" id="menu-toggle">
+    <label for="menu-toggle" class="menu-btn">
+      <img src="icons/menu.png" class="icon-menu">
+      <img src="icons/close.png" class="icon-close">
+    </label>
+
+    <div class="users">
+      <h1 id="userGreeting"></h1>
+      <img src="images/user.png" alt="user" id="userImg">
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h3>My To-Do</h3>
+      <p class="meta">Tambahkan tugas baru lengkap dengan prioritas dan tenggat waktu.</p>
+
+      <!-- Form Tambah Tugas Baru -->
+      <form id="addTaskForm" class="add-task-form">
+        <input type="text" id="taskName" placeholder="Nama tugas..." required />
+        <select id="taskPriority">
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+        <input type="date" id="taskDeadline" required />
+        <button type="submit">Tambah</button>
+      </form>
+
+      <!-- To-Do List Container -->
+      <div id="todoList" class="todo-list"></div>
+
+      <!-- Action Buttons -->
+      <div style="margin-top:12px; display:flex; gap:8px;">
+        <button id="showAllBtn" class="btn ghost">Tampilkan Semua</button>
+        <button id="showDoneBtn" class="btn">Tampilkan Done</button>
+        <button id="clearDoneBtn" class="btn ghost" style="margin-left:auto">Hapus Semua Done</button>
+      </div>
+    </section>
+
+    <aside class="card right-col">
+      <h4>Sudah Selesai (Done)</h4>
+      <div id="doneContainer"></div>
+    </aside>
+  </main>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem('loggedInUser'));
+    const STORAGE_KEY = `todos_${user.email}`;
+    const userGreeting = document.getElementById("userGreeting");
+    const todoList = document.getElementById("todoList");
+    const doneContainer = document.getElementById("doneContainer");
+    const addForm = document.getElementById("addTaskForm");
+    const taskName = document.getElementById("taskName");
+    const taskPriority = document.getElementById("taskPriority");
+    const taskDeadline = document.getElementById("taskDeadline");
+    const showAllBtn = document.getElementById("showAllBtn");
+    const showDoneBtn = document.getElementById("showDoneBtn");
+    const clearDoneBtn = document.getElementById("clearDoneBtn");
+
+    let todos = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    // --- user / login check ---
+    (function initUser() {
+    const logged = localStorage.getItem('loggedIn');
+    const raw = localStorage.getItem('loggedInUser');
+
+    if (!logged || logged !== 'true' || !raw) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    try {
+        const user = JSON.parse(raw);
+        const name = user.namaLengkap || 'Guest';
+        const jabatan = user.jabatan ? ` (${user.jabatan})` : '';
+        userGreeting.textContent = `Halo, ${name}${jabatan}!`;
+    } catch (e) {
+        userGreeting.textContent = 'Halo!';
+    }
+    })();
+
+    // --- form add ---
+    addForm.addEventListener("submit", e => {
+      e.preventDefault();
+      const name = taskName.value.trim();
+      const prio = taskPriority.value;
+      const date = taskDeadline.value;
+
+      if(!name || !date) return alert("Isi nama tugas dan tenggat waktu!");
+
+      todos.push({
+        id: Date.now(),
+        text: name,
+        priority: prio,
+        deadline: date,
+        done: false,
+        createdAt: Date.now()
+      });
+      saveTodos();
+      renderTodos();
+      addForm.reset();
+      taskName.focus();
+    });
+
+    showAllBtn.addEventListener("click", () => renderTodos());
+    showDoneBtn.addEventListener("click", () => renderTodos("done"));
+    clearDoneBtn.addEventListener("click", () => {
+      if(confirm("Hapus semua tugas yang sudah selesai?")){
+        todos = todos.filter(t => !t.done);
+        saveTodos();
+        renderTodos();
+      }
+    });
+
+    function saveTodos(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+    }
+
+    function renderTodos(filter = "all"){
+      const filtered = filter === "done" ? todos.filter(t=>t.done) : todos;
+      if(filtered.length === 0){
+        todoList.innerHTML = "<p class='meta'>Belum ada tugas.</p>";
+        doneContainer.innerHTML = "<p class='meta'>Belum ada tugas selesai.</p>";
+        return;
+      }
+
+      const grouped = {};
+      filtered.forEach(t=>{
+        if(!grouped[t.deadline]) grouped[t.deadline] = [];
+        grouped[t.deadline].push(t);
+      });
+
+      const sortedDates = Object.keys(grouped).sort((a,b)=> new Date(a)-new Date(b));
+      todoList.innerHTML = sortedDates.map(date => `
+        <div class="date-group">
+          <h5>📅 ${formatDateReadable(date)}</h5>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;">
+            ${grouped[date].map(renderItem).join("")}
+          </ul>
+        </div>
+      `).join("");
+
+      // done container
+      const doneItems = todos.filter(t=>t.done);
+      doneContainer.innerHTML = doneItems.length === 0
+        ? "<p class='meta'>Belum ada tugas selesai.</p>"
+        : doneItems.map(t=>`<div class="meta">✅ ${escapeHtml(t.text)}</div>`).join("");
+    }
+
+    function renderItem(t){
+      const prio = t.priority === "high" ? "priority-high" : (t.priority==="medium"?"priority-medium":"priority-low");
+      return `
+        <li class="todo-item ${t.done?"done":""} ${prio}" data-id="${t.id}">
+          <div class="checkbox">${t.done ? "✓" : ""}</div>
+          <div class="todo-text">${escapeHtml(t.text)}</div>
+          <div style="font-size:12px;color:var(--muted);min-width:110px;text-align:right;">
+            ${formatDateReadable(t.deadline)}<br>
+            <small>${t.priority}</small>
+          </div>
+          <button class="delete-btn">🗑️</button>
+        </li>
+      `;
+    }
+
+    todoList.addEventListener("click", e=>{
+      const item = e.target.closest(".todo-item");
+      if(!item) return;
+      const id = +item.dataset.id;
+      if(e.target.classList.contains("delete-btn")){
+        todos = todos.filter(t=>t.id!==id);
+      } else {
+        todos = todos.map(t=>t.id===id?{...t,done:!t.done}:t);
+      }
+      saveTodos();
+      renderTodos();
+    });
+
+    function escapeHtml(s){ return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c])); }
+    function formatDateReadable(d){
+      try {
+        const date = new Date(d);
+        return date.toLocaleDateString('id-ID',{day:'numeric',month:'short'});
+      } catch { return d; }
+    }
+
+    renderTodos();
+    document.getElementById('userImg').addEventListener('click', function() {
+    window.location.href = 'profile.html';
+    });
+  </script>
+</body>
+</html>

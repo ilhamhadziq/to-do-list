@@ -36,7 +36,7 @@
                 </div>
                 <button class="login" type="submit">Masuk</button>
             </form>
-                <button class="register" type="submit" onclick="location.href='register.html'">Daftar</button>
+                <!-- <button class="register" type="submit" onclick="location.href='register.html'">Daftar</button> -->
         </section>
     </main>
     <script>
@@ -52,20 +52,31 @@
             }
         }
         document.getElementById('loginForm').addEventListener('submit', function(e) {
-        e.preventDefault();
+            e.preventDefault();
 
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const user = JSON.parse(localStorage.getItem('user'));
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
 
-        if (user && user.email === email && user.password === password) {
-            alert('Login berhasil!');
-            localStorage.setItem('loggedIn', 'true'); // tanda login
-            window.location.href = 'coba.html';
-        } else {
-            alert('Email atau password salah!');
-        }
+            // Ambil semua users dari localStorage
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+
+            // Cari user dengan email & password yang cocok
+            const user = users.find(u => u.email === email && u.password === password);
+
+            if (user) {
+                alert('Login berhasil!');
+
+                // Simpan user yang sedang login
+                localStorage.setItem('loggedIn', 'true');
+                localStorage.setItem('loggedInUser', JSON.stringify(user));
+
+                // Arahkan ke halaman utama
+                window.location.href = 'dashboard.html';
+            } else {
+                alert('Email atau password salah!');
+            }
         });
+
     </script>
 </body>
 </html>

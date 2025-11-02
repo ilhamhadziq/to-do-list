@@ -29,7 +29,11 @@
                 <div class="login-email">
                 <p>E-mail <span class="required">*</span></p>
                 <input type="email" required class="email" id="email">
-                </div>                
+                </div>
+                <div class="login-name">
+                    <p>Jabatan <span class="required">*</span></p>
+                    <input type="text" required class="email" id="jabatan">
+                </div>
                 <div class="login-password">
                     <p name="password">Kata Sandi <span class="required">*</span></p>
                     <input type="password" name="password" required class="password" id="password" placeholder="">
@@ -66,31 +70,47 @@
         });
 
         document.getElementById('registerForm').addEventListener('submit', function(e) {
-        e.preventDefault(); // mencegah form submit otomatis
+            e.preventDefault();
 
-        // Ambil semua inputan
-        const namaLengkap = document.getElementById('namaLengkap').value;
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
+            // Ambil semua inputan
+            const namaLengkap = document.getElementById('namaLengkap').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const jabatan = document.getElementById('jabatan').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
 
-        // Cek kecocokan password
-        if (password !== confirmPassword) {
-            // alert('Password dan konfirmasi tidak cocok!');
-            document.getElementById('password').value = '';
-            document.getElementById('confirmPassword').value = '';
-            document.getElementById('password').placeholder= 'Password Anda Salah!';
-            document.getElementById('password').focus();
-            return; // hentikan proses lanjut
-        }
+            // Validasi password cocok
+            if (password !== confirmPassword) {
+                document.getElementById('password').value = '';
+                document.getElementById('confirmPassword').value = '';
+                document.getElementById('password').placeholder = 'Password Anda Salah!';
+                document.getElementById('password').focus();
+                return;
+            }
 
-        // Simpan ke localStorage
-        const user = { namaLengkap, email, password };
-        localStorage.setItem('user', JSON.stringify(user)); // simpan sebagai string JSON
+            // Ambil daftar user dari localStorage (kalau belum ada, jadikan array kosong)
+            let users = JSON.parse(localStorage.getItem('users')) || [];
 
-        alert('Registrasi berhasil!');
-        window.location.href = 'login.html';
+            // Cek apakah email sudah terdaftar
+            const sudahAda = users.some(user => user.email === email);
+            if (sudahAda) {
+                alert('Email sudah terdaftar! Silakan login atau gunakan email lain.');
+                return;
+            }
+
+            // Buat objek user baru
+            const newUser = { namaLengkap, email, jabatan, password };
+
+            // Tambahkan ke array users
+            users.push(newUser);
+
+            // Simpan kembali ke localStorage
+            localStorage.setItem('users', JSON.stringify(users));
+
+            alert('Registrasi berhasil!');
+            window.location.href = 'login.html';
         });
+
         </script>
 </body>
 </html>

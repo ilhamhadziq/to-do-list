@@ -17,7 +17,7 @@ main{
     justify-content: center;
     align-items: center;
     min-height: 90vh;
-    background-color: #FFFDF3;
+    background-color: #f7feff;
 }
 .login-card{
     border-radius: 5px;
